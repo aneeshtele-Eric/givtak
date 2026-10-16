@@ -2,7 +2,7 @@
  
 **Live Cloud Run Deployment:** https://givtak-589359892281.asia-south1.run.app 
  
-Built by **Team Agent RASAR** for the Google AI Agent Hackathon. 
+Built by **Team Agent RASAR**
  
 ## Architecture 
 GIVTAK is built on Google's Agent Development Kit (ADK) pattern: **"Gemini reasons. Deterministic tools decide."** 
