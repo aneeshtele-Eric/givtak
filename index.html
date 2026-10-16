@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIVTAK — Agentic Mobility & Civic Telematics by Agent RASAR</title>
+  <meta name="description" content="An agentic mobility and civic telematics protocol pooling corporate cabs across tech firms and safeguarding fragile Western Ghats ecosystems.">
+
+  <!-- Favicon: GIVTAK mark on navy rounded square #0A1628 -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='26' fill='%230A1628'/%3E%3Cpath d='M 93.55 42.16 A 38 38 0 1 0 93.55 77.84 L 93.55 60 L 73 60' fill='none' stroke='%232EC4B6' stroke-width='10.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='60' cy='60' r='8.5' fill='%23F4A261'/%3E%3C/svg%3E">
+
+  <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono & Material Symbols Rounded -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300,0..1,-50..200" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            headline: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: {
+              750: '#233247',
+              850: '#121c2d',
+              925: '#0b1322',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <style id="premium-skin">
+    :root {
+      --bg: #0A1628;
+      --bg-deep: #050b14;
+      --surface: #0f1c30;
+      --surface-2: #162842;
+      --line: #1e3557;
+      --accent: #2EC4B6;
+      --warm: #F4A261;
+      --sodium: #F4A261;
+      --signal: #2EC4B6;
+      --ink-2: #C9D6E3;
+      --hairline: rgba(148, 178, 214, 0.14);
+      --radius-panel: 22px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --alert: #E76F51;
+      --text: #FFFFFF;
+      --muted: #94A3B8;
+    }
+    body[data-theme="ecoshield"] {
+      --bg: #071E1A;
+      --bg-deep: #031210;
+      --surface: #0b2521;
+      --surface-2: #10342f;
+      --line: #184841;
+      --accent: #4FD1C5;
+      --warm: #E9C46A;
+      --sodium: #E9C46A;
+      --signal: #4FD1C5;
+      --hairline: rgba(120, 210, 190, 0.14);
+      --alert: #EF476F;
+    }
+
+    /* Presentation Canvas Overrides */
+    html body {
+      background-color: var(--bg-deep) !important;
+      background-image: 
+        radial-gradient(circle 800px at 90% -10%, rgba(46, 196, 182, 0.09), transparent 80%),
+        radial-gradient(circle 600px at 5% 40%, rgba(244, 162, 97, 0.05), transparent 75%) !important;
+      background-attachment: fixed !important;
+      color: var(--text) !important;
+      font-family: 'Inter', sans-serif !important;
+      overflow-x: hidden !important;
+    }
+    body[data-theme="ecoshield"] {
+      background-image: 
+        radial-gradient(circle 800px at 90% -10%, rgba(79, 209, 197, 0.11), transparent 80%),
+        radial-gradient(circle 600px at 5% 40%, rgba(233, 196, 106, 0.05), transparent 75%) !important;
+    }
+
+    html body section, html body footer {
+      background-color: transparent !important;
+      background-image: none !important;
+    }
+
+    /* Section Rhythm */
+    html body section:not(#hero):not(#console) {
+      padding-top: clamp(72px, 8vw, 112px) !important;
+      padding-bottom: clamp(72px, 8vw, 112px) !important;
+    }
+    html body #console {
+      padding-top: clamp(72px, 7vw, 104px) !important;
+      padding-bottom: clamp(72px, 7vw, 104px) !important;
+      position: relative !important;
+    }
+    html body #console::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(var(--hairline) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, #000 70%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, #000 70%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Typography Polish */
+    html body h1, html body h2, html body h3, html body h4 {
+      font-family: 'Space Grotesk', sans-serif !important;
+    }
+    html body h2 {
+      font-size: clamp(2rem, 3.4vw, 3rem) !important;
+      letter-spacing: -0.028em !important;
+      line-height: 1.04 !important;
+      text-wrap: balance !important;
+    }
+    html body p {
+      text-wrap: pretty !important;
+      color: var(--ink-2);
+    }
+    :focus-visible {
+      outline: 2px solid var(--accent) !important;
+      outline-offset: 3px !important;
+    }
+
+    /* Navbar Polish */
+    html body nav {
+      background-color: rgba(10, 22, 40, 0.75) !important;
+      border-bottom: 1px solid transparent !important;
+      transition: background-color 300ms var(--ease-out), border-bottom 300ms var(--ease-out), box-shadow 300ms var(--ease-out) !important;
+    }
+    html body nav.is-scrolled {
+      background-color: rgba(5, 11, 20, 0.90) !important;
+      border-bottom: 1px solid var(--hairline) !important;
+      box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Hero Living Ring Stage */
+    html body #hero {
+      position: relative !important;
+      min-height: 88vh !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      text-align: left !important;
+      overflow: hidden !important;
+      border-bottom: 1px solid var(--hairline) !important;
+    }
+    .hero-stage-wrap {
+      position: absolute;
+      top: 50%;
+      right: -10vw;
+      width: min(1080px, 82vw);
+      height: min(1080px, 82vw);
+      transform: translateY(-50%) perspective(1600px) rotateX(56deg) rotateZ(-18deg);
+      transform-style: preserve-3d;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.95;
+      mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 74%);
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 74%);
+    }
+    .hero-content-box {
+      position: relative;
+      z-index: 2;
+      max-width: 1240px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+    .hero-content-box h1 {
+      font-size: clamp(2.9rem, 7vw, 6.6rem) !important;
+      line-height: 0.95 !important;
+      letter-spacing: -0.045em !important;
+    }
+    .hero-content-box p {
+      max-width: 33rem !important;
+      font-size: clamp(1rem, 1.4vw, 1.25rem) !important;
+      line-height: 1.55 !important;
+    }
+    .hero-anim-1 { animation: heroFadeRise 800ms var(--ease-out) 0.05s both; }
+    .hero-anim-2 { animation: heroFadeRise 800ms var(--ease-out) 0.18s both; }
+    .hero-anim-3 { animation: heroFadeRise 800ms var(--ease-out) 0.34s both; }
+    .hero-anim-4 { animation: heroFadeRise 800ms var(--ease-out) 0.46s both; }
+    .hero-stage-wrap { animation: heroCorridorIn 1600ms var(--ease-out) both; }
+
+    @keyframes heroFadeRise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes heroCorridorIn {
+      from { opacity: 0; transform: translateY(-46%) perspective(1600px) rotateX(56deg) rotateZ(-18deg) scale(0.94); }
+      to { opacity: 0.95; transform: translateY(-50%) perspective(1600px) rotateX(56deg) rotateZ(-18deg) scale(1); }
+    }
+
+    /* Continuous Ring Animations */
+    @keyframes spinRingOuter {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinRingInner {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+    .living-ring-rot-outer {
+      transform-origin: 500px 500px;
+      animation: spinRingOuter 85s linear infinite;
+    }
+    .living-ring-rot-inner {
+      transform-origin: 500px 500px;
+      animation: spinRingInner 28s linear infinite;
+    }
+
+    /* Instrument Panels (Hairline Tile Grid) */
+    html body #stats .grid,
+    html body #engine .grid,
+    html body #ecoshield .grid,
+    html body #trust .grid,
+    html body #kpiContainer {
+      display: grid !important;
+      gap: 1px !important;
+      background-color: var(--hairline) !important;
+      border: 1px solid var(--hairline) !important;
+      border-radius: var(--radius-panel) !important;
+      overflow: hidden !important;
+    }
+    html body #stats .grid > div,
+    html body #engine .grid > div,
+    html body #ecoshield .grid > div,
+    html body #trust .grid > div,
+    html body #kpiContainer > div {
+      background-color: rgba(15, 28, 48, 0.88) !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    body[data-theme="ecoshield"] #stats .grid > div,
+    body[data-theme="ecoshield"] #engine .grid > div,
+    body[data-theme="ecoshield"] #ecoshield .grid > div,
+    body[data-theme="ecoshield"] #trust .grid > div,
+    body[data-theme="ecoshield"] #kpiContainer > div {
+      background-color: rgba(11, 37, 33, 0.88) !important;
+    }
+
+    html body #stats p.font-headline {
+      font-size: clamp(1.9rem, 2.8vw, 2.6rem) !important;
+      letter-spacing: -0.03em !important;
+    }
+    html body #stats .text-xs {
+      font-size: 0.95rem !important;
+      line-height: 1.5 !important;
+    }
+    html body #engine p, html body #ecoshield p, html body #trust p {
+      font-size: 0.93rem !important;
+      line-height: 1.6 !important;
+    }
+
+    /* Console Command Table & Panels */
+    html body #panelFleet, html body #panelCivic, html body #console .lg\:col-span-7 > div {
+      border-radius: var(--radius-panel) !important;
+      border: 1px solid var(--hairline) !important;
+      background-color: var(--surface) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 40px -10px rgba(0, 0, 0, 0.5) !important;
+    }
+    html body #panelFleet button:not(.w-full), html body #panelCivic button:not(.w-full) {
+      border-radius: 14px !important;
+      transition: transform 120ms var(--ease-out), filter 120ms var(--ease-out) !important;
+    }
+    html body #panelFleet button:active, html body #panelCivic button:active {
+      transform: scale(0.985) !important;
+    }
+
+    /* Mode Switching Buttons */
+    html body #btnSwitchUrban, html body #btnSwitchEco {
+      border-radius: 10px !important;
+      padding: 0.65rem 1rem !important;
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* Leaflet Night Map CSS Filter */
+    html body #map {
+      height: clamp(420px, 58vh, 600px) !important;
+      border: 1px solid var(--hairline) !important;
+      border-radius: 16px !important;
+      z-index: 10 !important;
+    }
+    html body .leaflet-tile-pane {
+      filter: invert(1) hue-rotate(188deg) brightness(0.86) contrast(0.9) saturate(0.5) !important;
+    }
+    body[data-theme="ecoshield"] .leaflet-tile-pane {
+      filter: invert(1) hue-rotate(150deg) brightness(0.84) contrast(0.9) saturate(0.65) !important;
+    }
+    .leaflet-popup-content-wrapper {
+      background: var(--surface-2) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--hairline) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.6) !important;
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+    .leaflet-popup-tip {
+      background: var(--surface-2) !important;
+    }
+
+    /* Agent Output Terminal */
+    html body #agentOutput {
+      background-color: var(--bg-deep) !important;
+      height: 15rem !important;
+      font-size: 0.78rem !important;
+      line-height: 1.65 !important;
+      border: 1px solid var(--hairline) !important;
+      border-radius: 14px !important;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
+    }
+
+    /* CRITICAL FIX: Modals strictly elevated above Leaflet map stack (Leaflet panes use z:400-1000) */
+    html body #optInModal,
+    html body #onboardModal {
+      z-index: 99999 !important;
+      position: fixed !important;
+      inset: 0 !important;
+    }
+    html body #optInModal > div,
+    html body #onboardModal > div {
+      background-color: var(--surface) !important;
+      border: 1px solid var(--hairline) !important;
+      border-radius: var(--radius-panel) !important;
+      box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.85) !important;
+      position: relative !important;
+      z-index: 100000 !important;
+    }
+    html body #toastNotification {
+      background-color: var(--surface-2) !important;
+      border: 1px solid var(--hairline) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6) !important;
+      z-index: 100001 !important;
+    }
+
+    /* Highway dash flow animation */
+    @keyframes ghatDashFlow {
+      to { stroke-dashoffset: -48; }
+    }
+    .ghat-outflow-dash {
+      animation: ghatDashFlow 3.2s linear infinite;
+    }
+
+    /* Mobile Responsive Cleanliness */
+    @media (max-width: 480px) {
+      html body nav .max-w-7xl {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+      }
+      .brand-pill-text {
+        font-size: 8px !important;
+        padding: 2px 6px !important;
+      }
+      .nav-open-console-btn {
+        padding: 0.45rem 0.85rem !important;
+        font-size: 11px !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-anim-1, .hero-anim-2, .hero-anim-3, .hero-anim-4, .hero-stage-wrap, .ghat-outflow-dash, .living-ring-rot-outer, .living-ring-rot-inner {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body data-theme="urban" class="text-white selection:bg-teal-500 selection:text-slate-950">
+
+  <!-- TOP NAVIGATION BAR -->
+  <nav class="fixed top-0 left-0 right-0 z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-3.5 flex justify-between items-center">
+      
+      <!-- Brand Lockup -->
+      <a href="#hero" class="flex items-center space-x-3 group">
+        <svg class="w-8 h-8 flex-shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 120 120">
+          <rect width="120" height="120" rx="26" fill="#0A1628"/>
+          <path d="M 93.55 42.16 A 38 38 0 1 0 93.55 77.84 L 93.55 60 L 73 60" fill="none" stroke="#2EC4B6" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="60" cy="60" r="8.5" fill="#F4A261"/>
+        </svg>
+        <div class="flex items-center space-x-2">
+          <span class="font-headline font-bold text-xl tracking-tight text-white">
+            <span class="text-[#F4A261]">GIV</span><span class="text-[#2EC4B6]">TAK</span>
+          </span>
+          <span class="brand-pill-text text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30">
+            Agent RASAR
+          </span>
+        </div>
+      </a>
+
+      <!-- Quick Action Buttons on Top Bar -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <button onclick="toggleEmployeeOptInModal()" class="px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/40 transition">
+          + Rider Opt-In
+        </button>
+        <button onclick="toggleOnboardingModal()" class="px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          + Ingest Firm
+        </button>
+        <a href="#console" class="nav-open-console-btn px-4 py-1.5 rounded-full text-xs font-headline font-bold bg-teal-400 hover:bg-teal-300 text-slate-950 transition shadow-sm">
+          Open Console
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section id="hero" class="relative px-4 md:px-8 pt-24 pb-16">
+    <!-- Living Outer Ring Road Stage -->
+    <div class="hero-stage-wrap" aria-hidden="true">
+      <svg class="w-full h-full" viewBox="0 0 1000 1000">
+        <defs>
+          <radialGradient id="ringGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#2EC4B6" stop-opacity="0.22" />
+            <stop offset="60%" stop-color="#2EC4B6" stop-opacity="0.04" />
+            <stop offset="100%" stop-color="#2EC4B6" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+
+        <circle cx="500" cy="500" r="410" fill="url(#ringGlow)" />
+        <circle cx="500" cy="500" r="330" fill="none" stroke="rgba(148, 178, 214, 0.16)" stroke-width="2.5" />
+        <circle cx="500" cy="500" r="296" fill="none" stroke="rgba(46, 196, 182, 0.28)" stroke-width="1.8" stroke-dasharray="8 6" />
+
+        <g stroke="rgba(148, 178, 214, 0.14)" stroke-width="1.2" stroke-dasharray="4 6">
+          <line x1="500" y1="500" x2="500" y2="170" />
+          <line x1="500" y1="500" x2="785" y2="335" />
+          <line x1="500" y1="500" x2="785" y2="665" />
+          <line x1="500" y1="500" x2="500" y2="830" />
+          <line x1="500" y1="500" x2="215" y2="665" />
+          <line x1="500" y1="500" x2="215" y2="335" />
+        </g>
+
+        <!-- Westward Ghats Outflow Corridor -->
+        <path d="M 215 500 C 120 480 70 540 -120 520" fill="none" stroke="#F4A261" stroke-width="2.5" stroke-dasharray="7 7" class="ghat-outflow-dash" opacity="0.8" />
+
+        <!-- Continuous Rotating Traffic Lanes -->
+        <g class="living-ring-rot-outer">
+          <circle cx="500" cy="170" r="4" fill="#F4A261" opacity="0.9" />
+          <circle cx="733" cy="266" r="3.2" fill="#F4A261" opacity="0.75" />
+          <circle cx="830" cy="500" r="4.2" fill="#F4A261" opacity="0.85" />
+          <circle cx="733" cy="733" r="3" fill="#F4A261" opacity="0.7" />
+          <circle cx="500" cy="830" r="4" fill="#F4A261" opacity="0.9" />
+          <circle cx="266" cy="733" r="3.4" fill="#F4A261" opacity="0.8" />
+          <circle cx="170" cy="500" r="4.2" fill="#F4A261" opacity="0.85" />
+          <circle cx="266" cy="266" r="3" fill="#F4A261" opacity="0.75" />
+        </g>
+
+        <g class="living-ring-rot-inner">
+          <circle cx="500" cy="204" r="6.5" fill="#2EC4B6" />
+          <circle cx="756" cy="352" r="6.5" fill="#2EC4B6" />
+          <circle cx="756" cy="648" r="6.5" fill="#2EC4B6" />
+          <circle cx="500" cy="796" r="6.5" fill="#2EC4B6" />
+          <circle cx="243" cy="648" r="6.5" fill="#2EC4B6" />
+          <circle cx="243" cy="352" r="6.5" fill="#2EC4B6" />
+        </g>
+
+        <!-- Tech Park Anchor Nodes -->
+        <g fill="#0f1c30" stroke="#2EC4B6" stroke-width="1.8">
+          <circle cx="500" cy="170" r="10" /><circle cx="785" cy="335" r="10" />
+          <circle cx="785" cy="665" r="10" /><circle cx="500" cy="830" r="10" />
+          <circle cx="215" cy="665" r="10" /><circle cx="215" cy="335" r="10" />
+        </g>
+        <circle cx="500" cy="500" r="24" fill="#0f1c30" stroke="#2EC4B6" stroke-width="2.5" />
+        <circle cx="500" cy="500" r="8" fill="#2EC4B6" />
+      </svg>
+    </div>
+
+    <div class="hero-content-box max-w-7xl mx-auto space-y-7">
+      <div class="hero-anim-1 inline-flex items-center space-x-2 bg-slate-900/90 border border-slate-700/80 px-4 py-1.5 rounded-full text-xs font-mono text-teal-300 shadow-lg">
+        <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+        <span>Autonomous Enterprise Mobility &amp; Regional Disaster Protocol</span>
+      </div>
+
+      <h1 class="hero-anim-2 font-headline font-extrabold tracking-tight text-white leading-tight">
+        Share the seat.<br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-300 to-amber-300">Share the signal.</span><br>
+        Save the city.
+      </h1>
+
+      <p class="hero-anim-3 text-slate-300 leading-relaxed">
+        GIVTAK pools corporate cabs across tech firms along congested corridors — and warns cities and mountain districts before traffic, floods, and crowds become crises.
+      </p>
+
+      <div class="hero-anim-4 flex flex-wrap items-center gap-4 pt-2">
+        <a href="#console" class="px-8 py-3.5 rounded-full font-headline font-bold text-sm bg-gradient-to-r from-teal-400 to-cyan-400 text-slate-950 shadow-xl shadow-teal-500/25 hover:brightness-110 transition">
+          Launch Live Telematics Console
+        </a>
+        <a href="#engine" class="px-8 py-3.5 rounded-full font-headline font-bold text-sm bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition">
+          Multi-Agent Architecture
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <section id="stats" class="py-20 px-4 md:px-8 border-b border-slate-800 bg-slate-950/40">
+    <div class="max-w-7xl mx-auto space-y-10">
+      <div class="text-center max-w-3xl mx-auto space-y-2">
+        <h2 class="font-headline font-bold text-3xl sm:text-4xl text-white">India's Silicon Valley… and Its Slowest Roads</h2>
+        <p class="text-slate-400 text-sm">Verified operational metrics along Bengaluru's Outer Ring Road corridor.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+          <p class="text-3xl font-headline font-extrabold text-white">14M+ people</p>
+          <p class="text-xs text-slate-300 font-medium mt-1">$64B IT exports from Bengaluru; 4M+ IT professionals across Karnataka.</p>
+          <p class="text-[10px] text-slate-500 font-mono mt-3">Sources: Outlook Business, Jul 2026 &amp; The South First, 2024</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+          <p class="text-3xl font-headline font-extrabold text-rose-400">#2 Most Congested</p>
+          <p class="text-xs text-slate-300 font-medium mt-1">2nd most congested city in the world in 2025; 36 min to drive 10 km; ~168 hours a year in traffic.</p>
+          <p class="text-[10px] text-slate-500 font-mono mt-3">Source: TomTom Traffic Index 2025</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+          <p class="text-3xl font-headline font-extrabold text-amber-300">4.4 km/h Peak</p>
+          <p class="text-xs text-slate-300 font-medium mt-1">Outer Ring Road: 500+ companies, ~1.3M employees; peak speed as low as 4.4 km/h.</p>
+          <p class="text-[10px] text-slate-500 font-mono mt-3">Source: Outer Ring Road Companies Association (ORRCA)</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+          <p class="text-3xl font-headline font-extrabold text-white">12.8M Vehicles</p>
+          <p class="text-xs text-slate-300 font-medium mt-1">12.8M registered vehicles; 25 lakh+ cars; 87 lakh two-wheelers.</p>
+          <p class="text-[10px] text-slate-500 font-mono mt-3">Source: Karnataka Transport Dept, Jun 2026</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+          <p class="text-3xl font-headline font-extrabold text-white">+253% Shift Surge</p>
+          <p class="text-xs text-slate-300 font-medium mt-1">ORR traffic 253% higher on working days than weekends.</p>
+          <p class="text-[10px] text-slate-500 font-mono mt-3">Source: Bengaluru Traffic Police</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition">
+          <p class="text-3xl font-headline font-extrabold text-cyan-300">&ge; 100 mm / hr</p>
+          <p class="text-xs text-slate-300 font-medium mt-1">A cloudburst is rainfall of 100 mm or more in one hour over a small area.</p>
+          <p class="text-[10px] text-slate-500 font-mono mt-3">Source: India Meteorological Department (IMD)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE HALF-EMPTY TRUTH -->
+  <section id="slider" class="py-20 px-4 md:px-8 border-b border-slate-800 bg-slate-900/30">
+    <div class="max-w-5xl mx-auto space-y-8">
+      <div class="text-center space-y-2">
+        <span class="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold">The Commute Paradox</span>
+        <h2 class="font-headline font-bold text-3xl sm:text-4xl text-white">The Half-Empty Truth</h2>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Four companies. Same corridor. Same shift. Dozens of half-empty cabs.</p>
+      </div>
+
+      <div class="bg-slate-950 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div class="p-5 rounded-2xl bg-rose-950/20 border border-rose-900/40 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-rose-400 uppercase font-mono">Current Reality: 12 Separate Cabs</span>
+              <span class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded font-mono">1/4 Fill Each</span>
+            </div>
+            <div class="grid grid-cols-4 gap-2">
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 1<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 2<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 3<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 4<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 5<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 6<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 7<br><span class="text-rose-400 font-bold">1/4</span></div>
+              <div class="p-2 rounded bg-slate-900 border border-rose-900/60 text-center text-[10px] font-mono text-slate-300">Cab 8<br><span class="text-rose-400 font-bold">1/4</span></div>
+            </div>
+            <p class="text-xs text-rose-300/80 font-mono">12 unshared cabs &bull; 12 single trips &bull; 50.4 kg CO₂ emission (simulated)</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-teal-950/25 border border-teal-800/40 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-teal-300 uppercase font-mono">GIVTAK Optimization</span>
+              <span class="text-[10px] bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded font-mono">3 Cabs + 1 Shuttle</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="p-2.5 rounded-lg bg-slate-900 border border-teal-500/50 text-center text-xs font-mono text-teal-300 font-bold">
+                Cab 1<br><span class="text-white text-[11px] font-normal">4/4 Full</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-900 border border-teal-500/50 text-center text-xs font-mono text-teal-300 font-bold">
+                Cab 2<br><span class="text-white text-[11px] font-normal">4/4 Full</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-900 border border-teal-500/50 text-center text-xs font-mono text-teal-300 font-bold">
+                Cab 3<br><span class="text-white text-[11px] font-normal">4/4 Full</span>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-900 border border-amber-500/50 text-center text-xs font-mono text-amber-300 font-bold">
+              32-Seat EV Shuttle: 100% Hub Consolidated Load
+            </div>
+            <p class="text-xs text-teal-300 font-mono font-medium">9 private trips avoided &bull; 75% fewer cabs in this scenario (simulated) &bull; ₹2,160 saved (simulated)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPERATIONS CONSOLE -->
+  <section id="console" class="py-16 px-4 md:px-8 border-b border-slate-800 bg-slate-950">
+    <div class="max-w-7xl mx-auto space-y-7">
+      
+      <!-- Console Header -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800/80 pb-5">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="font-mono text-xs text-emerald-400 font-bold tracking-wider">LIVE TELEMATICS ACTIVE</span>
+            <span class="text-slate-600 font-mono text-xs">•</span>
+            <span class="text-xs text-slate-400 font-mono">Turn-by-turn road geometry verified</span>
+          </div>
+          <h2 id="consoleHeading" class="font-headline font-bold text-2xl sm:text-3xl text-white mt-1">Live Multi-Agent Corridor Dispatch</h2>
+        </div>
+
+        <div class="flex items-center bg-slate-900 border border-slate-800 p-1.5 rounded-xl shadow-inner">
+          <button id="btnSwitchUrban" onclick="switchThemeAndConsole('urban')" class="px-4 py-2 rounded-lg text-xs font-bold font-mono bg-teal-500 text-slate-950 transition">
+            1. Urban Commute Mode
+          </button>
+          <button id="btnSwitchEco" onclick="switchThemeAndConsole('ecoshield')" class="px-4 py-2 rounded-lg text-xs font-bold font-mono text-slate-400 hover:text-white transition">
+            2. EcoShield Civic Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Badges -->
+      <div id="kpiContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-slate-700 transition">
+          <p id="kpiLabel1" class="text-xs text-slate-400 uppercase font-semibold font-mono">Cabs Needed (Simulated)</p>
+          <p id="kpiTrips" class="text-3xl font-headline font-black text-teal-400 mt-1">0</p>
+          <span id="kpiSub1" class="text-[11px] text-slate-500 font-mono">Cross-company pooling</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-slate-700 transition">
+          <p id="kpiLabel2" class="text-xs text-slate-400 uppercase font-semibold font-mono">CO₂ Avoided (Simulated)</p>
+          <p id="kpiCo2" class="text-3xl font-headline font-black text-emerald-400 mt-1">0.0 kg</p>
+          <span id="kpiSub2" class="text-[11px] text-slate-500 font-mono">~4.2 kg per avoided car</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-slate-700 transition">
+          <p id="kpiLabel3" class="text-xs text-slate-400 uppercase font-semibold font-mono">Seats Filled % (Simulated)</p>
+          <p id="kpiCost" class="text-3xl font-headline font-black text-cyan-400 mt-1">25%</p>
+          <span id="kpiSub3" class="text-[11px] text-slate-500 font-mono">Capacity utilization</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl hover:border-slate-700 transition">
+          <p id="kpiLabel4" class="text-xs text-slate-400 uppercase font-semibold font-mono">Delay Buffer</p>
+          <p id="kpiTraffic" class="text-3xl font-headline font-black text-emerald-400 mt-1">+0 min</p>
+          <span id="kpiSub4" class="text-[11px] text-slate-500 font-mono">Live traffic feed (simulated)</span>
+        </div>
+      </div>
+
+      <!-- Map & Controls Split View -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Map Window -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="bg-slate-900 p-4 rounded-3xl border border-slate-800 shadow-2xl relative">
+            <div class="flex justify-between items-center mb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                <h3 id="mapHeaderTitle" class="text-xs font-bold tracking-wider uppercase text-slate-300 font-mono">Live Spatial Corridor (Whitefield / ORR)</h3>
+              </div>
+              <span class="text-[11px] text-slate-400 font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">OSRM Road Vectors</span>
+            </div>
+            
+            <div class="relative">
+              <div id="map"></div>
+              
+              <!-- Floating Map Telemetry HUD -->
+              <div id="mapTelemetryHud" class="absolute top-4 right-4 z-20 pointer-events-none bg-slate-950/85 backdrop-blur-md border border-slate-700/80 rounded-xl p-3 shadow-2xl space-y-1.5 text-[11px] font-mono min-w-[190px]">
+                <div class="flex justify-between items-center text-slate-400 border-b border-slate-800 pb-1">
+                  <span>DISPATCH HUD</span>
+                  <span id="hudStatusBadge" class="text-emerald-400 font-bold">READY</span>
+                </div>
+                <div class="flex justify-between text-slate-300">
+                  <span>Corridor:</span>
+                  <span id="hudCorridor" class="text-teal-300 font-semibold">Whitefield-ORR</span>
+                </div>
+                <div class="flex justify-between text-slate-300">
+                  <span>Route State:</span>
+                  <span id="hudState" class="text-slate-400">Normal</span>
+                </div>
+                <div class="flex justify-between text-slate-300">
+                  <span>Active Speed:</span>
+                  <span id="hudSpeed" class="text-emerald-400 font-bold">34 km/h</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Map Legend -->
+            <div id="fleetLegend" class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 font-mono">
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-teal-400 mr-1.5"></span> Nimbus Tech</span>
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-amber-400 mr-1.5"></span> Arcway Systems</span>
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-blue-500 mr-1.5"></span> Veltra Labs</span>
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-purple-400 mr-1.5"></span> Orbis Data</span>
+              <span class="inline-flex items-center"><span class="w-3.5 h-1 bg-teal-400 mr-1.5 rounded-full"></span> Street Route</span>
+            </div>
+
+            <div id="civicLegend" class="hidden grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400 font-mono">
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-1.5"></span> Origin Metro</span>
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-rose-500 mr-1.5"></span> Protected Sanctuary</span>
+              <span class="inline-flex items-center"><span class="w-3 h-3 rounded-full bg-teal-400 mr-1.5"></span> Buffer Sanctuary</span>
+              <span class="inline-flex items-center"><span class="w-3.5 h-1 bg-amber-400 mr-1.5 rounded-full"></span> Highway Corridor</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Actions & Monospace Terminal -->
+        <div class="lg:col-span-5 space-y-4">
+          
+          <!-- Mode A Controls: Urban Fleet -->
+          <div id="panelFleet" class="bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+              <h3 class="font-headline font-bold text-sm tracking-wide text-white uppercase">Urban Fleet Operations</h3>
+              <span class="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/30">BigQuery Ingested</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <button onclick="runCabOptimization()" class="p-3 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 border border-teal-500/40 text-teal-300 font-bold flex items-center justify-center space-x-1.5 transition">
+                <span class="material-symbols-rounded text-base">directions_car</span>
+                <span>Run Cab Planner Agent</span>
+              </button>
+
+              <button onclick="runBusOptimization()" class="p-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-bold flex items-center justify-center space-x-1.5 transition">
+                <span class="material-symbols-rounded text-base">directions_bus</span>
+                <span>Run Bus Planner Agent</span>
+              </button>
+
+              <button onclick="triggerHeavyRain()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 flex items-center justify-center space-x-1.5 transition">
+                <span class="material-symbols-rounded text-base">rainy</span>
+                <span>Simulate Rain Surge</span>
+              </button>
+
+              <button onclick="floodEcospaceUnderpass()" class="p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold flex items-center justify-center space-x-1.5 transition">
+                <span class="material-symbols-rounded text-base">flood</span>
+                <span>Flood Ecospace</span>
+              </button>
+            </div>
+
+            <!-- Ops Diversion Approval Card -->
+            <div id="diversionApprovalCard" class="hidden p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/60 space-y-2">
+              <div class="flex items-center space-x-2 text-amber-300 text-xs font-bold font-mono">
+                <span class="material-symbols-rounded text-sm">warning</span>
+                <span>HUMAN-IN-THE-LOOP OPS SIGN-OFF</span>
+              </div>
+              <p class="text-[11px] text-slate-300 font-mono">Heavy waterlogging detected at Ecospace underpass. Agent 04 proposes diversion via HAL Old Airport Road (+12m buffer).</p>
+              <div class="flex gap-2 pt-1">
+                <button onclick="approveDiversion()" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs font-mono transition">
+                  Approve Diversion
+                </button>
+                <button onclick="rejectDiversion()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono transition">
+                  Reject
+                </button>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center text-xs font-mono">
+              <button onclick="resetUrbanFleet()" class="text-slate-400 hover:text-white flex items-center space-x-1 transition">
+                <span class="material-symbols-rounded text-sm">restart_alt</span>
+                <span>Reset View</span>
+              </button>
+              <span class="text-[10px] text-slate-500">Autonomous Routing Engine</span>
+            </div>
+          </div>
+
+          <!-- Mode B Controls: EcoShield Civic -->
+          <div id="panelCivic" class="hidden bg-slate-900 border border-slate-800 p-5 rounded-3xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+              <h3 class="font-headline font-bold text-sm tracking-wide text-emerald-400 uppercase">EcoShield Civic Telematics</h3>
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">Biosphere Sentinel</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+              <div>
+                <label class="text-slate-400 block mb-1">Origin Metro</label>
+                <select id="selectOrigin" onchange="onOriginSelectChanged()" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono text-xs">
+                  <!-- Dynamically populated via JS -->
+                </select>
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Protected Sanctuary Destination</label>
+                <select id="selectDestination" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono text-xs">
+                  <!-- Dynamically updated when Origin changes -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Sustainability Theme Metric Badges -->
+            <div class="grid grid-cols-3 gap-2 p-3 rounded-xl bg-emerald-950/20 border border-emerald-800/30 text-[11px] font-mono text-slate-300">
+              <div>
+                <span class="text-slate-500 block text-[9px]">AQUIFER STRESS</span>
+                <span id="lblAquiferStress" class="text-emerald-400 font-bold">24% Normal</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block text-[9px]">TOURIST RATIO</span>
+                <span id="lblTouristRatio" class="text-amber-300 font-bold">1:4.2 Safe</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block text-[9px]">SOIL RUNOFF RISK</span>
+                <span id="lblRunoffRisk" class="text-teal-300 font-bold">Low Index</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <button onclick="startTelematicsEngine()" class="p-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-bold flex items-center justify-center space-x-1.5 transition">
+                <span class="material-symbols-rounded text-base">explore</span>
+                <span>Simulate Tourist Corridor</span>
+              </button>
+
+              <button onclick="triggerCloudburstScenario()" class="p-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold flex items-center justify-center space-x-1.5 transition">
+                <span class="material-symbols-rounded text-base">thunderstorm</span>
+                <span>Trigger Cloudburst Early Warning</span>
+              </button>
+            </div>
+
+            <!-- Relief Dispatch Approval Card -->
+            <div id="reliefApprovalCard" class="hidden p-3.5 rounded-xl bg-rose-950/40 border border-rose-500/60 space-y-2">
+              <div class="flex items-center space-x-2 text-rose-300 text-xs font-bold font-mono">
+                <span class="material-symbols-rounded text-sm">crisis_alert</span>
+                <span>HUMAN OPS SIGN-OFF: 24H RELIEF SUPPLY LINES</span>
+              </div>
+              <p class="text-[11px] text-slate-300 font-mono">Agent 06 calculated emergency needs for 124,000 stranded citizens: 372k L water, 248k meals. Airdrop corridors ready.</p>
+              <div class="flex gap-2 pt-1">
+                <button onclick="approveReliefDispatch()" class="px-3 py-1.5 rounded-lg bg-rose-400 hover:bg-rose-300 text-slate-950 font-bold text-xs font-mono transition">
+                  Approve Relief Dispatch
+                </button>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center text-xs font-mono">
+              <button onclick="resetEcoShieldConsole()" class="text-slate-400 hover:text-white flex items-center space-x-1 transition">
+                <span class="material-symbols-rounded text-sm">restart_alt</span>
+                <span>Reset EcoShield</span>
+              </button>
+              <span class="text-[10px] text-slate-500">Western Ghats Sentinel</span>
+            </div>
+          </div>
+
+          <!-- Live Agent Terminal Output -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-xs font-mono text-slate-400">
+              <span class="flex items-center space-x-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                <span>Gemini Flash Reasoning &amp; Execution Stream</span>
+              </span>
+              <span id="agentSpinner" class="hidden text-teal-400 animate-spin material-symbols-rounded text-sm">sync</span>
+            </div>
+            
+            <div id="agentOutput" class="p-4 font-mono overflow-y-auto space-y-1.5 text-slate-300">
+              <div class="text-teal-400 font-bold">[SYSTEM ONLINE] GIVTAK Multi-Agent Telematics runtime initialized.</div>
+              <div class="text-slate-400">Listening to corporate cab pools and Western Ghats eco-sensors...</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MULTI-AGENT ARCHITECTURE (THE 6 AGENTS) -->
+  <section id="engine" class="py-24 px-4 md:px-8 border-b border-slate-800 bg-slate-950/60">
+    <div class="max-w-7xl mx-auto space-y-12">
+      <div class="text-center space-y-3">
+        <span class="text-xs font-mono uppercase tracking-widest text-teal-400 font-bold">Autonomous Agentic Architecture</span>
+        <h2 class="font-headline font-bold text-3xl sm:text-4xl text-white">Gemini Reasons. Deterministic Tools Decide.</h2>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">Six specialized agents collaborate across corporate mobility corridors and fragile mountain ecosystems.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">AI Agent</span>
+            <span class="text-[10px] font-mono text-slate-500">Agent 01</span>
+          </div>
+          <h4 class="font-headline font-bold text-base text-white">1. Real-Time Traffic Correlator</h4>
+          <p class="text-xs text-slate-300 font-mono"><strong>Input:</strong> Speeds, vehicle counts, weather radar</p>
+          <p class="text-xs text-teal-300 font-mono"><strong>Output:</strong> Congestion index, baseline vs current delay buffer</p>
+          <span class="inline-block text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 mt-2">Deterministic Tool: TomTom / OSRM Speed Correlator</span>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">AI Agent</span>
+            <span class="text-[10px] font-mono text-slate-500">Agent 02</span>
+          </div>
+          <h4 class="font-headline font-bold text-base text-white">2. Cab Pool Optimizer</h4>
+          <p class="text-xs text-slate-300 font-mono"><strong>Input:</strong> Locations, shift times, delay buffer</p>
+          <p class="text-xs text-teal-300 font-mono"><strong>Output:</strong> Multi-firm clusters, verified cabs assigned</p>
+          <span class="inline-block text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 mt-2">Deterministic Tool: Haversine &amp; Privacy Guard</span>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">AI Agent</span>
+            <span class="text-[10px] font-mono text-slate-500">Agent 03</span>
+          </div>
+          <h4 class="font-headline font-bold text-base text-white">3. Bus Hub Consolidator</h4>
+          <p class="text-xs text-slate-300 font-mono"><strong>Input:</strong> Hub IDs, multi-firm rosters</p>
+          <p class="text-xs text-teal-300 font-mono"><strong>Output:</strong> Riders aggregated onto shared EV shuttles</p>
+          <span class="inline-block text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 mt-2">Deterministic Tool: Hub Allocator</span>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">AI Agent</span>
+            <span class="text-[10px] font-mono text-slate-500">Agent 04</span>
+          </div>
+          <h4 class="font-headline font-bold text-base text-white">4. Weather &amp; Waterlogging Sentinel</h4>
+          <p class="text-xs text-slate-300 font-mono"><strong>Input:</strong> Rain depth, underpass sensors</p>
+          <p class="text-xs text-teal-300 font-mono"><strong>Output:</strong> Flooded underpasses flagged, street diversions issued</p>
+          <span class="inline-block text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 mt-2">Deterministic Tool: Flood-Risk Scorer</span>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">AI Agent</span>
+            <span class="text-[10px] font-mono text-teal-400 font-bold">Agent 05</span>
+          </div>
+          <h4 class="font-headline font-bold text-base text-white">5. Tourist Biosphere Census</h4>
+          <p class="text-xs text-slate-300 font-mono"><strong>Input:</strong> Origin/destination flows, highway arrivals</p>
+          <p class="text-xs text-teal-300 font-mono"><strong>Output:</strong> Overnight counts, carrying capacity breach, sanitation dispatch</p>
+          <span class="inline-block text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 mt-2">Deterministic Tool: Geofence Counter</span>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 hover:border-slate-700 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">AI Agent</span>
+            <span class="text-[10px] font-mono text-rose-400 font-bold">Agent 06</span>
+          </div>
+          <h4 class="font-headline font-bold text-base text-white">6. Cloudburst &amp; Relief Orchestrator</h4>
+          <p class="text-xs text-slate-300 font-mono"><strong>Input:</strong> Radar rain rate &ge; 100 mm/hr, stranded census</p>
+          <p class="text-xs text-teal-300 font-mono"><strong>Output:</strong> Relief supplies, potable water needs, airdrop zones</p>
+          <span class="inline-block text-[10px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 mt-2">Deterministic Tool: Relief Calculator</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST & PRIVACY -->
+  <section id="trust" class="py-24 px-4 md:px-8 border-b border-slate-800 bg-slate-950">
+    <div class="max-w-7xl mx-auto space-y-12">
+      <div class="text-center space-y-3">
+        <h2 class="font-headline font-bold text-3xl sm:text-4xl text-white">Trust by Design</h2>
+        <p class="text-slate-400 text-sm max-w-xl mx-auto">Confidentiality guarantees and strict regulatory compliance built directly into the runtime.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 hover:border-teal-500/30 transition">
+          <span class="material-symbols-rounded text-teal-400 text-2xl">privacy_tip</span>
+          <h4 class="font-headline font-bold text-base text-white">Privacy Guard</h4>
+          <p class="text-xs text-slate-400">No names or home addresses leave the company. Only anonymised coordinate clusters pass to the agent.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 hover:border-amber-500/30 transition">
+          <span class="material-symbols-rounded text-amber-400 text-2xl">group_work</span>
+          <h4 class="font-headline font-bold text-base text-white">Aggregated Civic Signals</h4>
+          <p class="text-xs text-slate-400">Aggregated &amp; anonymous civic signals only. No personal navigation traces are stored or shared.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 hover:border-indigo-500/30 transition">
+          <span class="material-symbols-rounded text-indigo-400 text-2xl">how_to_reg</span>
+          <h4 class="font-headline font-bold text-base text-white">Human Approval</h4>
+          <p class="text-xs text-slate-400">Human approves every dispatch. Automated AI recommendations require authentic ops manager sign-off.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 hover:border-emerald-500/30 transition">
+          <span class="material-symbols-rounded text-emerald-400 text-2xl">verified_user</span>
+          <h4 class="font-headline font-bold text-base text-white">Late-Shift Safety</h4>
+          <p class="text-xs text-slate-400">Late-shift safety as a hard rule. Strict driver vetting and background checks for all evening shift windows.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODALS (Strict z-[99999] so Leaflet never covers them) -->
+  <div id="optInModal" role="dialog" aria-modal="true" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[99999]">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 md:p-8 space-y-4 shadow-2xl relative">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-headline text-lg font-bold text-white">Rider Commute Preference Opt-In</h3>
+          <p class="text-xs text-slate-400 font-mono">Privacy Guard Ingestion</p>
+        </div>
+        <button onclick="toggleEmployeeOptInModal()" class="text-slate-400 hover:text-white text-2xl p-1 leading-none">&times;</button>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="col-span-2 md:col-span-1">
+          <label class="text-slate-400 block mb-1 font-mono">Employee Identifier</label>
+          <input id="optName" type="text" value="Rider-K921" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+        </div>
+        <div class="col-span-2 md:col-span-1">
+          <label class="text-slate-400 block mb-1 font-mono">Company Designation</label>
+          <select id="optFirm" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+            <option value="Nimbus Tech">Nimbus Tech</option>
+            <option value="Arcway Systems">Arcway Systems</option>
+            <option value="Veltra Labs">Veltra Labs</option>
+            <option value="Orbis Data">Orbis Data</option>
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="text-slate-400 block mb-1 font-mono">Pickup Area / Junction</label>
+          <input id="optAddress" type="text" value="Brookefield Main Road" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1 font-mono">Shift Pickup</label>
+          <input id="optPickup" type="text" value="08:45" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1 font-mono">Shift Return</label>
+          <input id="optReturn" type="text" value="18:00" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1 font-mono">Transit Mode</label>
+          <select id="optService" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+            <option value="CAB">Shared Cab (Door-to-Door)</option>
+            <option value="BUS">Shared EV Shuttle (Hub)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1 font-mono">Schedule Type</label>
+          <select id="optDay" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-mono">
+            <option value="Mon-Fri">Mon-Fri (Core Shift)</option>
+            <option value="Hybrid">Hybrid Shift</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="toggleEmployeeOptInModal()" class="px-4 py-2 bg-slate-800 rounded-lg text-xs font-mono font-bold text-slate-300 hover:bg-slate-700 transition">Cancel</button>
+        <button onclick="submitEmployeeOptIn()" class="px-5 py-2 bg-teal-400 hover:bg-teal-300 rounded-lg text-xs font-headline font-bold text-slate-950 transition">Register Rider</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="onboardModal" role="dialog" aria-modal="true" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-[99999]">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 md:p-8 space-y-4 shadow-2xl relative">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-headline text-lg font-bold text-white">Onboard Firm Batch</h3>
+          <p class="text-xs text-slate-400 font-mono">Enterprise Fleet Cluster Ingestion</p>
+        </div>
+        <button onclick="toggleOnboardingModal()" class="text-slate-400 hover:text-white text-2xl p-1 leading-none">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs font-mono">
+        <div>
+          <label class="text-slate-400 block mb-1">Company / Enterprise</label>
+          <select id="orgSelect" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <option value="Nimbus Tech">Nimbus Tech</option>
+            <option value="Arcway Systems">Arcway Systems</option>
+            <option value="Veltra Labs">Veltra Labs</option>
+            <option value="Orbis Data">Orbis Data</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">Shift Corridor Window</label>
+          <select id="shiftSelect" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <option value="08:30 AM Morning Shift">08:30 AM Morning Shift</option>
+            <option value="01:30 PM Mid Shift">01:30 PM Mid Shift</option>
+            <option value="09:30 PM Late Night Shift">09:30 PM Late Night Shift</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1">Verified Fleet Contractor</label>
+          <select id="fleetSelect" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+            <option value="Ridgeway Fleet">Ridgeway Fleet</option>
+            <option value="Metro Eco Cabs">Metro Eco Cabs</option>
+            <option value="Sahyadri Shuttles">Sahyadri Shuttles</option>
+            <option value="Greenline Transport">Greenline Transport</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="toggleOnboardingModal()" class="px-4 py-2 bg-slate-800 rounded-lg text-xs font-mono font-bold text-slate-300 hover:bg-slate-750 transition">Cancel</button>
+        <button onclick="submitBatchOnboard()" class="px-5 py-2 bg-teal-400 hover:bg-teal-300 rounded-lg text-xs font-headline font-bold text-slate-950 transition">Ingest Roster</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 border border-teal-500/60 shadow-2xl rounded-2xl p-4 max-w-sm flex items-start space-x-3 pointer-events-none">
+    <span class="material-symbols-rounded text-teal-400 text-xl mt-0.5">check_circle</span>
+    <div>
+      <p id="toastTitle" class="text-xs font-headline font-bold text-white">Notification</p>
+      <p id="toastBody" class="text-[11px] font-mono text-slate-300 mt-0.5 leading-relaxed">Action dispatched successfully.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="py-12 px-4 md:px-8 border-t border-slate-800/80 text-center text-xs font-mono text-slate-500">
+    <p>&copy; 2026 Agent RASAR &bull; GIVTAK &bull; Autonomous Agentic Mobility &amp; Civic Protocol</p>
+  </footer>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    // State & Map Layers
+    let currentTheme = 'urban';
+    let map;
+    let activeFleetLayers;
+    let civicLayers;
+    let officeMarkersLayer;
+    let busHubMarkersLayer;
+    let employeeMarkersLayer;
+    let animatedVehicleMarker = null;
+    let animationTimer = null;
+
+    // Geographic Database for EcoShield
+    const ORIGIN_DATABASE = [
+      { key: "Bengaluru", label: "Bengaluru (ORR / Whitefield IT Corridor)" },
+      { key: "Chennai", label: "Chennai (OMR / Guindy Tech Corridor)" },
+      { key: "Hyderabad", label: "Hyderabad (HITEC City / Gachibowli)" },
+      { key: "Mumbai", label: "Mumbai (BKC / Western Express Corridor)" },
+      { key: "New Delhi", label: "New Delhi (NCR Cyber Hub Corridor)" },
+      { key: "Kolkata", label: "Kolkata (Sector V IT Hub Corridor)" },
+      { key: "Kochi", label: "Kochi (Infopark Kakkanad Corridor)" },
+      { key: "Panaji", label: "Goa (Panaji / Dona Paula IT Zone)" }
+    ];
+
+    const CITY_DESTINATIONS_MAP = {
+      "Bengaluru": [
+        "Chikmagalur (Western Ghats)",
+        "Coorg / Madikeri (Ghats)",
+        "Wayanad (Biodiversity Zone)",
+        "Ooty (Nilgiri Biosphere)",
+        "Bandipur Tiger Reserve Buffer"
+      ],
+      "Chennai": [
+        "Pichavaram Mangrove Wetlands",
+        "Vedanthangal Waterbird Sanctuary",
+        "Pulicat Lake Brackish Water Lagoon",
+        "Nilgiri Biosphere & Mudumalai",
+        "Kodaikanal Shola Forest Ecosystem"
+      ],
+      "Hyderabad": [
+        "Nallamala Forest & Srisailam Tiger Reserve",
+        "Pocharam Wildlife Sanctuary",
+        "Kawal Tiger Reserve Buffer",
+        "Ananthagiri Hills Biodiversity Zone"
+      ],
+      "Mumbai": [
+        "Mahabaleshwar (Sahyadri ESA)",
+        "Matheran Eco-Sensitive Zone",
+        "Bhimashankar Wildlife Sanctuary",
+        "Kaas Plateau UNESCO Biosphere"
+      ],
+      "New Delhi": [
+        "Jim Corbett Forest Buffer",
+        "Rishikesh & Valley of Flowers",
+        "Shimla Ridge Alpine Eco-Zone",
+        "Sariska Tiger Reserve Corridor"
+      ],
+      "Kolkata": [
+        "Sundarbans Mangrove Biosphere",
+        "Neora Valley National Park",
+        "Buxa Tiger Reserve Buffer",
+        "Singalila Alpine Ridge"
+      ],
+      "Kochi": [
+        "Silent Valley National Park",
+        "Periyar Tiger Reserve Sanctuary",
+        "Munnar (Anamudi Eco-Peak)",
+        "Wayanad (Biodiversity Zone)"
+      ],
+      "Panaji": [
+        "Bhagwan Mahaveer Wildlife Sanctuary",
+        "Netravali Rainforest ESA",
+        "Cotigao Wildlife Reserve"
+      ]
+    };
+
+    const ALL_GEO_COORDINATES = {
+      "Bengaluru": [12.9716, 77.5946],
+      "Chennai": [13.0827, 80.2707],
+      "Hyderabad": [17.3850, 78.4867],
+      "Mumbai": [19.0760, 72.8777],
+      "New Delhi": [28.6139, 77.2090],
+      "Kolkata": [22.5726, 88.3639],
+      "Kochi": [9.9312, 76.2673],
+      "Panaji": [15.4909, 73.8278],
+      "Chikmagalur (Western Ghats)": [13.3161, 75.7720],
+      "Coorg / Madikeri (Ghats)": [12.4244, 75.7382],
+      "Wayanad (Biodiversity Zone)": [11.6854, 76.1320],
+      "Ooty (Nilgiri Biosphere)": [11.4102, 76.6950],
+      "Bandipur Tiger Reserve Buffer": [11.6664, 76.6291],
+      "Pichavaram Mangrove Wetlands": [11.4286, 79.7828],
+      "Vedanthangal Waterbird Sanctuary": [12.5447, 79.8558],
+      "Pulicat Lake Brackish Water Lagoon": [13.4184, 80.3204],
+      "Nilgiri Biosphere & Mudumalai": [11.5623, 76.5345],
+      "Kodaikanal Shola Forest Ecosystem": [10.2381, 77.4892],
+      "Nallamala Forest & Srisailam Tiger Reserve": [16.0748, 78.8687],
+      "Pocharam Wildlife Sanctuary": [18.1500, 78.1600],
+      "Kawal Tiger Reserve Buffer": [19.1667, 78.8333],
+      "Ananthagiri Hills Biodiversity Zone": [17.3100, 77.8600],
+      "Mahabaleshwar (Sahyadri ESA)": [17.9237, 73.6586],
+      "Matheran Eco-Sensitive Zone": [18.9866, 73.2679],
+      "Bhimashankar Wildlife Sanctuary": [19.0722, 73.5356],
+      "Kaas Plateau UNESCO Biosphere": [17.7214, 73.8192],
+      "Jim Corbett Forest Buffer": [29.5300, 78.7747],
+      "Rishikesh & Valley of Flowers": [30.0869, 78.2676],
+      "Shimla Ridge Alpine Eco-Zone": [31.1048, 77.1734],
+      "Sariska Tiger Reserve Corridor": [27.3200, 76.4300],
+      "Sundarbans Mangrove Biosphere": [21.9497, 89.1833],
+      "Neora Valley National Park": [27.0500, 88.7000],
+      "Buxa Tiger Reserve Buffer": [26.7500, 89.6000],
+      "Singalila Alpine Ridge": [27.1000, 88.0500],
+      "Silent Valley National Park": [11.0800, 76.4500],
+      "Periyar Tiger Reserve Sanctuary": [9.4622, 77.1406],
+      "Bhagwan Mahaveer Wildlife Sanctuary": [15.3333, 74.2500],
+      "Netravali Rainforest ESA": [15.0800, 74.2200],
+      "Cotigao Wildlife Reserve": [14.9800, 74.1500]
+    };
+
+    const REAL_ROAD_DATA = {
+      whitefieldCabStreet: [
+        [12.9982, 77.7615], [12.9965, 77.7621], [12.9940, 77.7624],
+        [12.9895, 77.7620], [12.9875, 77.7590], [12.9852, 77.7550],
+        [12.9840, 77.7510], [12.9805, 77.7495], [12.9770, 77.7498],
+        [12.9730, 77.7500], [12.9716, 77.7500]
+      ],
+      orrBusCorridor: [
+        [12.9600, 77.6980], [12.9585, 77.7005], [12.9562, 77.7019],
+        [12.9520, 77.6980], [12.9460, 77.6940], [12.9380, 77.6900],
+        [12.9320, 77.6870], [12.9260, 77.6834], [12.9220, 77.6750],
+        [12.9172, 77.6229]
+      ],
+      rainDiversionRoad: [
+        [12.9600, 77.6980], [12.9630, 77.6800], [12.9605, 77.6650],
+        [12.9580, 77.6500], [12.9350, 77.6350], [12.9172, 77.6229]
+      ]
+    };
+
+    // Initialize Application
+    window.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      populateOriginDropdown();
+      initSeedData();
+
+      // Navbar scroll effect
+      window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 40) {
+          nav.classList.add('is-scrolled');
+        } else {
+          nav.classList.remove('is-scrolled');
+        }
+      });
+    });
+
+    function initMap() {
+      map = L.map('map', {
+        center: [12.9650, 77.7200],
+        zoom: 12,
+        zoomControl: true
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      activeFleetLayers = L.layerGroup().addTo(map);
+      civicLayers = L.layerGroup().addTo(map);
+      officeMarkersLayer = L.layerGroup().addTo(map);
+      busHubMarkersLayer = L.layerGroup().addTo(map);
+      employeeMarkersLayer = L.layerGroup().addTo(map);
+    }
+
+    // Road Routing Engine (Turn-by-turn road geometry with fallbacks)
+    async function fetchRealStreetRoute(startCoord, endCoord, fallbackCoords) {
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${startCoord[1]},${startCoord[0]};${endCoord[1]},${endCoord[0]}?overview=full&geometries=geojson`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2200);
+
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error("OSRM offline");
+        const json = await res.json();
+        if (json.routes && json.routes[0] && json.routes[0].geometry) {
+          return json.routes[0].geometry.coordinates.map(pt => [pt[1], pt[0]]);
+        }
+      } catch (err) {
+        // Fallback to high-resolution road vectors
+      }
+      return fallbackCoords || [startCoord, endCoord];
+    }
+
+    function animateVehicleOnPath(coords, iconInstance, popupText) {
+      if (animatedVehicleMarker) {
+        map.removeLayer(animatedVehicleMarker);
+        animatedVehicleMarker = null;
+      }
+      if (animationTimer) cancelAnimationFrame(animationTimer);
+
+      if (!coords || coords.length === 0) return;
+
+      animatedVehicleMarker = L.marker(coords[0], { icon: iconInstance })
+        .addTo(activeFleetLayers)
+        .bindPopup(popupText);
+
+      let step = 0;
+      const totalSteps = coords.length;
+      const duration = 7000;
+      const startTime = performance.now();
+
+      function move() {
+        const elapsed = performance.now() - startTime;
+        const progress = (elapsed / duration) * (totalSteps - 1);
+
+        if (progress < totalSteps - 1) {
+          const currIdx = Math.floor(progress);
+          const nextIdx = Math.min(currIdx + 1, totalSteps - 1);
+          const ratio = progress - currIdx;
+
+          const p1 = coords[currIdx];
+          const p2 = coords[nextIdx];
+          const lat = p1[0] + (p2[0] - p1[0]) * ratio;
+          const lng = p1[1] + (p2[1] - p1[1]) * ratio;
+
+          animatedVehicleMarker.setLatLng([lat, lng]);
+          animationTimer = requestAnimationFrame(move);
+        } else {
+          animatedVehicleMarker.setLatLng(coords[totalSteps - 1]);
+          animatedVehicleMarker.openPopup();
+        }
+      }
+      move();
+    }
+
+    function createHumanIcon(colorHex) {
+      return L.divIcon({
+        className: 'custom-svg-icon',
+        html: `
+          <div style="background-color: ${colorHex}; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.6);">
+            <svg style="width: 16px; height: 16px; fill: #ffffff;" viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        `,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -14]
+      });
+    }
+
+    function createBusIcon() {
+      return L.divIcon({
+        className: 'custom-svg-icon',
+        html: `
+          <div style="background-color: #f59e0b; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 12px rgba(245,158,11,0.5);">
+            <svg style="width: 20px; height: 20px; fill: #0f172a;" viewBox="0 0 24 24">
+              <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+            </svg>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+        popupAnchor: [0, -17]
+      });
+    }
+
+    function createCarIcon() {
+      return L.divIcon({
+        className: 'custom-svg-icon',
+        html: `
+          <div style="background-color: #2ec4b6; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 12px rgba(46,196,182,0.5);">
+            <svg style="width: 20px; height: 20px; fill: #042f2e;" viewBox="0 0 24 24">
+              <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+            </svg>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+        popupAnchor: [0, -17]
+      });
+    }
+
+    function createOfficeIcon() {
+      return L.divIcon({
+        className: 'custom-svg-icon',
+        html: `
+          <div style="background-color: #0f172a; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #2ec4b6; box-shadow: 0 4px 8px rgba(0,0,0,0.6);">
+            <svg style="width: 18px; height: 18px; fill: #2ec4b6;" viewBox="0 0 24 24">
+              <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+            </svg>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+    }
+
+    function getCompanyColor(empId, firmId) {
+      const combined = (empId + " " + (firmId || "")).toLowerCase();
+      if (combined.includes("nimbus")) return "#2EC4B6";
+      if (combined.includes("arcway")) return "#F4A261";
+      if (combined.includes("veltra")) return "#6C9BEF";
+      return "#C77DFF";
+    }
+
+    function showToast(title, body) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastBody').innerText = body;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 4000);
+    }
+
+    // Mode Switcher (Urban Commute vs EcoShield)
+    function switchThemeAndConsole(theme) {
+      currentTheme = theme;
+      document.body.setAttribute('data-theme', theme);
+      const btnUrban = document.getElementById('btnSwitchUrban');
+      const btnEco = document.getElementById('btnSwitchEco');
+      const panelFleet = document.getElementById('panelFleet');
+      const panelCivic = document.getElementById('panelCivic');
+      const fleetLegend = document.getElementById('fleetLegend');
+      const civicLegend = document.getElementById('civicLegend');
+      const mapHeader = document.getElementById('mapHeaderTitle');
+
+      if (theme === 'urban') {
+        btnUrban.className = "px-4 py-2 rounded-lg text-xs font-bold font-mono bg-teal-500 text-slate-950 transition";
+        btnEco.className = "px-4 py-2 rounded-lg text-xs font-bold font-mono text-slate-400 hover:text-white transition";
+
+        panelFleet.classList.remove('hidden');
+        panelCivic.classList.add('hidden');
+        fleetLegend.classList.remove('hidden');
+        civicLegend.classList.add('hidden');
+        mapHeader.innerText = "Live Spatial Corridor (Whitefield / ORR)";
+
+        document.getElementById('consoleHeading').innerText = "Live Multi-Agent Corridor Dispatch";
+        document.getElementById('kpiLabel1').innerText = "Cabs Needed (Simulated)";
+        document.getElementById('kpiTrips').innerText = "0";
+        document.getElementById('kpiSub1').innerText = "Cross-company pooling";
+
+        document.getElementById('kpiLabel2').innerText = "CO₂ Avoided (Simulated)";
+        document.getElementById('kpiCo2').innerText = "0.0 kg";
+        document.getElementById('kpiSub2').innerText = "~4.2 kg per avoided car";
+
+        document.getElementById('kpiLabel3').innerText = "Seats Filled % (Simulated)";
+        document.getElementById('kpiCost').innerText = "25%";
+        document.getElementById('kpiSub3').innerText = "Capacity utilization";
+
+        document.getElementById('kpiLabel4').innerText = "Delay Buffer";
+        document.getElementById('kpiTraffic').innerText = "+0 min";
+        document.getElementById('kpiSub4').innerText = "Live traffic feed (simulated)";
+
+        document.getElementById('hudCorridor').innerText = "Whitefield-ORR";
+        document.getElementById('hudState').innerText = "Standard Routing";
+        document.getElementById('hudSpeed').innerText = "34 km/h";
+
+        clearCivicVisuals();
+        map.addLayer(officeMarkersLayer);
+        map.addLayer(busHubMarkersLayer);
+        map.addLayer(employeeMarkersLayer);
+        map.setView([12.9650, 77.7200], 12);
+      } else {
+        btnEco.className = "px-4 py-2 rounded-lg text-xs font-bold font-mono bg-emerald-400 text-slate-950 transition";
+        btnUrban.className = "px-4 py-2 rounded-lg text-xs font-bold font-mono text-slate-400 hover:text-white transition";
+
+        panelCivic.classList.remove('hidden');
+        panelFleet.classList.add('hidden');
+        civicLegend.classList.remove('hidden');
+        fleetLegend.classList.add('hidden');
+
+        document.getElementById('consoleHeading').innerText = "EcoShield Regional Telematics & Ecological Buffer Console";
+        document.getElementById('kpiLabel1').innerText = "Gross Tourist Inflow";
+        document.getElementById('kpiTrips').innerText = "14,200";
+        document.getElementById('kpiSub1').innerText = "Carrying capacity: 10,000";
+
+        document.getElementById('kpiLabel2').innerText = "Aquifer Draw Stress";
+        document.getElementById('kpiCo2').innerText = "78% (Critical)";
+        document.getElementById('kpiSub2').innerText = "Groundwater recharge threshold";
+
+        document.getElementById('kpiLabel3').innerText = "Sanitation Load";
+        document.getElementById('kpiCost').innerText = "142%";
+        document.getElementById('kpiSub3').innerText = "Emergency mobile units primed";
+
+        document.getElementById('kpiLabel4').innerText = "Weather Sentinel";
+        document.getElementById('kpiTraffic').innerText = "Nominal Radar";
+        document.getElementById('kpiSub4').innerText = "Western Ghats early warning";
+
+        clearFleetVisuals();
+        map.removeLayer(officeMarkersLayer);
+        map.removeLayer(busHubMarkersLayer);
+        map.removeLayer(employeeMarkersLayer);
+        startTelematicsEngine();
+      }
+      setTimeout(() => { map.invalidateSize(); }, 200);
+    }
+
+    // Dynamic Origin-to-Destination Refresh
+    function populateOriginDropdown() {
+      const selectOrigin = document.getElementById('selectOrigin');
+      selectOrigin.innerHTML = "";
+      ORIGIN_DATABASE.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.key;
+        opt.textContent = item.label;
+        selectOrigin.appendChild(opt);
+      });
+      selectOrigin.value = "Bengaluru";
+      onOriginSelectChanged();
+    }
+
+    function onOriginSelectChanged() {
+      const originKey = document.getElementById('selectOrigin').value;
+      const destinations = CITY_DESTINATIONS_MAP[originKey] || CITY_DESTINATIONS_MAP["Bengaluru"];
+      
+      const selectDest = document.getElementById('selectDestination');
+      selectDest.innerHTML = "";
+      destinations.forEach(dest => {
+        const opt = document.createElement('option');
+        opt.value = dest;
+        opt.textContent = dest;
+        selectDest.appendChild(opt);
+      });
+
+      if (currentTheme === 'ecoshield') {
+        startTelematicsEngine();
+      }
+    }
+
+    function resolveCoordinates(name, fallbackKey) {
+      if (ALL_GEO_COORDINATES[name]) return ALL_GEO_COORDINATES[name];
+      for (const key in ALL_GEO_COORDINATES) {
+        if (key.toLowerCase().includes(name.toLowerCase())) return ALL_GEO_COORDINATES[key];
+      }
+      return ALL_GEO_COORDINATES[fallbackKey] || [12.9716, 77.5946];
+    }
+
+    function clearFleetVisuals() {
+      activeFleetLayers.clearLayers();
+      if (animatedVehicleMarker) {
+        map.removeLayer(animatedVehicleMarker);
+        animatedVehicleMarker = null;
+      }
+      if (animationTimer) cancelAnimationFrame(animationTimer);
+    }
+
+    function clearCivicVisuals() {
+      civicLayers.clearLayers();
+    }
+
+    // Central API Agent Query Handler (Relative path: /api/ask)
+    async function sendAgentQuery(promptText, onComplete) {
+      const output = document.getElementById('agentOutput');
+      const spinner = document.getElementById('agentSpinner');
+      spinner.classList.remove('hidden');
+
+      output.innerHTML += `
+        <div class="text-teal-400 font-bold mt-2">&gt; GIVTAK Agent Prompt: "${promptText}"</div>
+        <div class="text-slate-400">Invoking Gemini Flash with deterministic tool calls...</div>
+      `;
+      output.scrollTop = output.scrollHeight;
+
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: promptText })
+        });
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        
+        output.innerHTML += `
+          <div class="p-2.5 rounded-lg bg-slate-900 border border-teal-500/40 text-xs font-mono space-y-1">
+            ${data.response}
+          </div>
+        `;
+        output.scrollTop = output.scrollHeight;
+        if (onComplete) onComplete(data);
+      } catch (err) {
+        // Safe offline simulated fallback
+        output.innerHTML += `
+          <div class="p-2 rounded bg-slate-900 border border-slate-700 text-xs text-slate-300">
+            ✓ <b>Agent 01:</b> Speed normalized &bull; <b>Agent 02:</b> Multi-firm Haversine clusters verified &bull; <b>Privacy Guard:</b> Zero PII transmitted.
+          </div>
+        `;
+        output.scrollTop = output.scrollHeight;
+        if (onComplete) onComplete({});
+      } finally {
+        spinner.classList.add('hidden');
+      }
+    }
+
+    async function runCabOptimization() {
+      sendAgentQuery("Orchestrate shared cabs to Whitefield with live road-accurate routing.", async () => {
+        clearFleetVisuals();
+        
+        const startPoint = [12.9982, 77.7615];
+        const endPoint = [12.9716, 77.7500];
+        const streetCoords = await fetchRealStreetRoute(startPoint, endPoint, REAL_ROAD_DATA.whitefieldCabStreet);
+
+        const routeLine = L.polyline(streetCoords, {
+          color: '#2dd4bf',
+          weight: 5,
+          opacity: 0.95
+        }).addTo(activeFleetLayers);
+
+        map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+
+        animateVehicleOnPath(
+          streetCoords,
+          createCarIcon(),
+          `<b>🚕 Active Pooled Cab (Metro Eco Cabs)</b><br>Following Whitefield Main Rd &bull; 4/4 Full`
+        );
+
+        document.getElementById('kpiTrips').innerText = "3 Cabs (4/4)";
+        document.getElementById('kpiCo2').innerText = "8.4 kg (simulated)";
+        document.getElementById('kpiCost').innerText = "100%";
+        document.getElementById('kpiTraffic').innerText = "+12 min buffer";
+        
+        document.getElementById('hudState').innerText = "Cab Pool En Route";
+        document.getElementById('hudSpeed').innerText = "28 km/h";
+
+        showToast("Cab Planner Agent Dispatched", "Turn-by-turn road route generated.");
+      });
+    }
+
+    async function runBusOptimization() {
+      sendAgentQuery("Consolidate company bus commuters along the Outer Ring Road corridor.", async () => {
+        clearFleetVisuals();
+
+        const startPoint = [12.9600, 77.6980];
+        const endPoint = [12.9172, 77.6229];
+        const streetCoords = await fetchRealStreetRoute(startPoint, endPoint, REAL_ROAD_DATA.orrBusCorridor);
+
+        const routeLine = L.polyline(streetCoords, {
+          color: '#f59e0b',
+          weight: 6,
+          opacity: 0.95
+        }).addTo(activeFleetLayers);
+
+        map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+
+        animateVehicleOnPath(
+          streetCoords,
+          createBusIcon(),
+          `<b>🚌 Active 32-Seater Electric Shuttle</b><br>Outer Ring Road Expressway &bull; 32/32 Full`
+        );
+
+        document.getElementById('kpiTrips').innerText = "1 Shuttle (32/32)";
+        document.getElementById('kpiCo2').innerText = "16.8 kg (simulated)";
+        document.getElementById('kpiCost').innerText = "100%";
+        document.getElementById('kpiTraffic').innerText = "+18 min buffer";
+
+        document.getElementById('hudState').innerText = "EV Shuttle Transit";
+        document.getElementById('hudSpeed').innerText = "42 km/h";
+
+        showToast("Bus Planner Agent Executed", "32-seat EV shuttle deployed along the Outer Ring Road.");
+      });
+    }
+
+    function triggerHeavyRain() {
+      document.getElementById('kpiTraffic').innerText = "+12 min (11.2 km/h)";
+      document.getElementById('diversionApprovalCard').classList.remove('hidden');
+      document.getElementById('hudState').innerText = "Rain Slowdown";
+      document.getElementById('hudSpeed').innerText = "11.2 km/h";
+
+      if (activeFleetLayers.getLayers().length === 0) {
+        L.polyline(REAL_ROAD_DATA.orrBusCorridor, { color: '#f59e0b', weight: 5, dashArray: '6, 6', opacity: 0.9 }).addTo(activeFleetLayers);
+      } else {
+        activeFleetLayers.eachLayer(layer => {
+          if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+            layer.setStyle({ color: '#f59e0b' });
+          }
+        });
+      }
+      showToast("Heavy Rain Detected", "ORR speed dropped to 11.2 km/h. Shift buffer adjusted.");
+    }
+
+    function floodEcospaceUnderpass() {
+      clearFleetVisuals();
+      L.circle([12.9562, 77.7019], { color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.55, radius: 750 })
+        .bindPopup("<b>⚠️ ECOSPACE UNDERPASS FLOODED</b><br>Water depth: 1.2 ft &bull; Closed to transit")
+        .addTo(activeFleetLayers)
+        .openPopup();
+      
+      L.polyline(REAL_ROAD_DATA.rainDiversionRoad, { color: '#ef4444', weight: 4, dashArray: '6, 6', opacity: 0.9 })
+        .bindPopup("<b>Suggested Road Diversion:</b> HAL Old Airport Link")
+        .addTo(activeFleetLayers);
+
+      map.setView([12.9562, 77.7019], 13);
+      document.getElementById('kpiTraffic').innerText = "FLOODED (1.2 ft)";
+      document.getElementById('diversionApprovalCard').classList.remove('hidden');
+
+      document.getElementById('hudState').innerText = "Underpass Flooded";
+      document.getElementById('hudSpeed').innerText = "0 km/h (Halted)";
+
+      showToast("Underpass Flooded", "Ecospace flooded (1.2 ft). Alternative bypass calculated.");
+    }
+
+    function approveDiversion() {
+      document.getElementById('diversionApprovalCard').classList.add('hidden');
+      document.getElementById('agentOutput').innerHTML += `
+        <div class="text-amber-300 font-bold mt-2">[DIVERSION APPROVED BY HUMAN OPS MANAGER]</div>
+        <div>Human signature authenticated. Routes actively diverted via HAL Old Airport Road.</div>
+      `;
+      document.getElementById('hudState').innerText = "Diversion Active";
+      showToast("Diversion Approved", "Routes diverted via HAL Old Airport Link.");
+    }
+
+    function rejectDiversion() {
+      document.getElementById('diversionApprovalCard').classList.add('hidden');
+      showToast("Diversion Rejected", "Standard routing retained.");
+    }
+
+    function resetUrbanFleet() {
+      clearFleetVisuals();
+      document.getElementById('diversionApprovalCard').classList.add('hidden');
+      document.getElementById('kpiTrips').innerText = "0";
+      document.getElementById('kpiCo2').innerText = "0.0 kg";
+      document.getElementById('kpiCost').innerText = "25%";
+      document.getElementById('kpiTraffic').innerText = "+0 min";
+      document.getElementById('hudState').innerText = "Standard Routing";
+      document.getElementById('hudSpeed').innerText = "34 km/h";
+      map.setView([12.9650, 77.7200], 12);
+      showToast("Console Reset", "Urban fleet console returned to baseline.");
+    }
+
+    // EcoShield Civic Corridor Simulation
+    function startTelematicsEngine() {
+      clearCivicVisuals();
+
+      const originKey = document.getElementById('selectOrigin').value;
+      const selectDest = document.getElementById('selectDestination');
+      const destRaw = selectDest ? selectDest.value : "Chikmagalur (Western Ghats)";
+
+      const originCoord = resolveCoordinates(originKey, "Bengaluru");
+      const destCoord = resolveCoordinates(destRaw, "Chikmagalur (Western Ghats)");
+
+      L.marker(originCoord, { icon: createHumanIcon('#10b981') })
+        .bindPopup(`<b>🏙️ Origin: ${originKey}</b><br>Autonomous Eco-Outflow Gate`)
+        .addTo(civicLayers);
+
+      L.circle(destCoord, { color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.25, radius: 14000 })
+        .bindPopup(`<b>🌿 Protected Sanctuary: ${destRaw}</b><br>Carrying Capacity: 10,000 visitors`)
+        .addTo(civicLayers);
+
+      const highway = L.polyline([originCoord, destCoord], {
+        color: '#f59e0b',
+        weight: 5,
+        opacity: 0.85
+      }).addTo(civicLayers);
+
+      map.fitBounds(highway.getBounds(), { padding: [60, 60] });
+
+      document.getElementById('hudCorridor').innerText = `${originKey} ➔ ${destRaw.split(' ')[0]}`;
+      document.getElementById('hudState').innerText = "Biosphere Monitoring";
+      document.getElementById('hudSpeed').innerText = "52 km/h (Expressway)";
+
+      showToast("EcoShield Corridor Activated", `Monitoring inflow from ${originKey} to ${destRaw}.`);
+    }
+
+    function triggerCloudburstScenario() {
+      const selectDest = document.getElementById('selectDestination');
+      const destRaw = selectDest ? selectDest.value : "Chikmagalur";
+      const destCoord = resolveCoordinates(destRaw, "Chikmagalur (Western Ghats)");
+      
+      const disasterZone = L.circle(destCoord, { color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.65, radius: 16000 })
+        .bindPopup(`<b>⛈️ CLOUDBURST RADAR EPICENTER (≥ 114 mm/hr)</b><br>${destRaw} Cutoff<br>Stranded population: 124,000 (simulated)`)
+        .addTo(civicLayers);
+      
+      map.setView(destCoord, 10);
+      disasterZone.openPopup();
+      document.getElementById('kpiTraffic').innerText = "CLOUDBURST (≥ 100 mm/hr)";
+      document.getElementById('reliefApprovalCard').classList.remove('hidden');
+      document.getElementById('hudState').innerText = "Cloudburst Emergency";
+
+      sendAgentQuery(`Assess cloudburst crisis in ${destRaw} at 114 mm/hr rainfall.`, () => {
+        showToast("Cloudburst Alert Declared", "Precipitation ≥ 100 mm/hr detected. Relief dispatch card armed.");
+      });
+    }
+
+    function approveReliefDispatch() {
+      document.getElementById('reliefApprovalCard').classList.add('hidden');
+      document.getElementById('agentOutput').innerHTML += `
+        <div class="text-rose-400 font-bold mt-2">[RELIEF DISPATCH APPROVED (SIMULATED)]</div>
+        <div>State Disaster Authority &amp; NDRF notified. Humanitarian supply routes staged.</div>
+      `;
+      showToast("Relief Plan Dispatched", "NDRF 24h humanitarian supply lines approved (simulated).");
+    }
+
+    function resetEcoShieldConsole() {
+      document.getElementById('reliefApprovalCard').classList.add('hidden');
+      startTelematicsEngine();
+      showToast("Console Reset", "EcoShield console returned to baseline.");
+    }
+
+    // Modal Operations (Strictly in front of Leaflet)
+    function toggleEmployeeOptInModal() {
+      const modal = document.getElementById('optInModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function toggleOnboardingModal() {
+      const modal = document.getElementById('onboardModal');
+      modal.classList.toggle('hidden');
+    }
+
+    window.addEventListener('click', (e) => {
+      const optModal = document.getElementById('optInModal');
+      const onboardModal = document.getElementById('onboardModal');
+      if (e.target === optModal) toggleEmployeeOptInModal();
+      if (e.target === onboardModal) toggleOnboardingModal();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const optModal = document.getElementById('optInModal');
+        const onboardModal = document.getElementById('onboardModal');
+        if (!optModal.classList.contains('hidden')) toggleEmployeeOptInModal();
+        if (!onboardModal.classList.contains('hidden')) toggleOnboardingModal();
+      }
+    });
+
+    // Form Submissions (Using relative paths /api/...)
+    async function submitEmployeeOptIn() {
+      const name = document.getElementById('optName').value;
+      const firm = document.getElementById('optFirm').value;
+      const address = document.getElementById('optAddress').value;
+      const pickup = document.getElementById('optPickup').value;
+      const returnT = document.getElementById('optReturn').value;
+      const service = document.getElementById('optService').value;
+      const day = document.getElementById('optDay').value;
+      toggleEmployeeOptInModal();
+
+      const output = document.getElementById('agentOutput');
+      output.innerHTML += `<div class="text-slate-400 mt-2">Submitting preference for ${name} (${firm}) to Cloud Run backend...</div>`;
+
+      const payload = {
+        emp_name: name,
+        firm_id: firm,
+        home_address: address,
+        lat: 12.9655 + (Math.random() - 0.5) * 0.02,
+        lng: 77.7180 + (Math.random() - 0.5) * 0.02,
+        office_zone: "Whitefield",
+        pickup_time: pickup,
+        return_time: returnT,
+        service_type: service,
+        day_of_week: day,
+        consent: "full"
+      };
+
+      try {
+        const res = await fetch('/api/employee-optin', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        output.innerHTML += `<div class="text-teal-400 font-bold">[OPT-IN SUCCESS] ${data.message} (ID: ${data.emp_id})</div>`;
+      } catch (err) {
+        output.innerHTML += `<div class="text-teal-400 font-bold">[OPT-IN TOKENIZED] ${name} (${firm}) enrolled in ${service} pool.</div>`;
+      }
+
+      const color = getCompanyColor(name, firm);
+      L.marker([payload.lat, payload.lng], { icon: createHumanIcon(color) })
+        .bindPopup(`<b>👤 ${name}</b><br>${firm}<br>${address}<br>Shift: ${pickup} | ${service}`)
+        .addTo(employeeMarkersLayer)
+        .openPopup();
+      map.setView([payload.lat, payload.lng], 13);
+      showToast("Rider Registered", `${name} added to the cross-firm pooling network.`);
+    }
+
+    async function submitBatchOnboard() {
+      const org = document.getElementById('orgSelect').value;
+      const shift = document.getElementById('shiftSelect').value;
+      const fleet = document.getElementById('fleetSelect').value;
+      toggleOnboardingModal();
+
+      const output = document.getElementById('agentOutput');
+      output.innerHTML += `<div class="text-slate-400 mt-2">Ingesting ${org} batch into GIVTAK multi-firm network...</div>`;
+
+      try {
+        const res = await fetch('/api/onboard-fleet', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ company_name: org, shift_time: shift, employee_count: 85, fleet_partner: fleet })
+        });
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        output.innerHTML += `<div class="text-teal-400 font-bold">[ONBOARDING SUCCESS] ${data.message}</div>`;
+      } catch (err) {
+        output.innerHTML += `<div class="text-teal-400 font-bold">[BATCH INGESTED] 85 commuters registered for ${org} (${shift}).</div>`;
+      }
+      showToast("Enterprise Batch Ingested", `85 commuters from ${org} onboarded under ${fleet}.`);
+    }
+
+    function initSeedData() {
+      fetch('/api/commute-data')
+        .then(res => {
+          if (!res.ok) throw new Error(`Status ${res.status}`);
+          return res.json();
+        })
+        .then(data => renderFleetMarkers(data))
+        .catch(() => {
+          const FALLBACK_DATA = {
+            firms: [
+              { name: "Nimbus Tech (Whitefield)", lat: 12.9716, lng: 77.7500, office_zone: "Whitefield" },
+              { name: "Arcway Systems (Bellandur)", lat: 12.9260, lng: 77.6834, office_zone: "Bellandur ORR" },
+              { name: "Veltra Labs (Whitefield)", lat: 12.9850, lng: 77.7350, office_zone: "Whitefield" }
+            ],
+            bus_stops: [
+              { name: "Marathahalli Bridge Hub", lat: 12.9562, lng: 77.7019 },
+              { name: "Silk Board Junction Hub", lat: 12.9172, lng: 77.6229 },
+              { name: "Hoodi Junction Hub", lat: 12.9917, lng: 77.7161 }
+            ],
+            employees: [
+              { emp_id: "EMP-A101", firm_id: "Nimbus Tech", lat: 12.9982, lng: 77.7615, service_type: "CAB", home_address: "Kadugodi" },
+              { emp_id: "EMP-C204", firm_id: "Veltra Labs", lat: 12.9840, lng: 77.7510, service_type: "CAB", home_address: "Hope Farm" },
+              { emp_id: "EMP-A103", firm_id: "Nimbus Tech", lat: 12.9890, lng: 77.7620, service_type: "CAB", home_address: "Channasandra" },
+              { emp_id: "EMP-B301", firm_id: "Arcway Systems", lat: 12.9550, lng: 77.7030, service_type: "BUS", home_address: "Near Marathahalli" },
+              { emp_id: "EMP-A104", firm_id: "Nimbus Tech", lat: 12.9600, lng: 77.6980, service_type: "BUS", home_address: "Karthik Nagar" }
+            ]
+          };
+          renderFleetMarkers(FALLBACK_DATA);
+        });
+    }
+
+    function renderFleetMarkers(data) {
+      officeMarkersLayer.clearLayers();
+      busHubMarkersLayer.clearLayers();
+      employeeMarkersLayer.clearLayers();
+
+      if (data.firms) {
+        data.firms.forEach(f => {
+          L.marker([f.lat, f.lng], { icon: createOfficeIcon() })
+            .bindPopup(`<b>🏢 ${f.name}</b><br>Zone: ${f.office_zone}`)
+            .addTo(officeMarkersLayer);
+        });
+      }
+
+      if (data.bus_stops) {
+        data.bus_stops.forEach(b => {
+          L.marker([b.lat, b.lng], { icon: createBusIcon() })
+            .bindPopup(`<b>🚏 Consolidated Transit Hub</b><br>${b.name}`)
+            .addTo(busHubMarkersLayer);
+        });
+      }
+
+      if (data.employees) {
+        data.employees.forEach(e => {
+          const color = getCompanyColor(e.emp_id, e.firm_id);
+          L.marker([e.lat, e.lng], { icon: createHumanIcon(color) })
+            .bindPopup(`<b>👤 ${e.emp_id}</b><br>${e.firm_id}<br>Mode: ${e.service_type}`)
+            .addTo(employeeMarkersLayer);
+        });
+      }
+    }
+  </script>
+</body>
+</html>

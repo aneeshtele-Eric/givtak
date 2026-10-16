@@ -1,0 +1,9 @@
+venv/ 
+env/ 
+__pycache__/ 
+*.pyc 
+.env 
+*.pem 
+*key*.json 
+.gcloudignore 
+New Text Document.txt

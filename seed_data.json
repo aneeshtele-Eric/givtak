@@ -1,0 +1,71 @@
+﻿{
+  "firms": [
+    {"firm_id": "FIRM-A", "name": "Infotech Labs", "lat": 12.9716, "lng": 77.7500, "office_zone": "Whitefield"},
+    {"firm_id": "FIRM-B", "name": "Global Financials", "lat": 12.9260, "lng": 77.6834, "office_zone": "Bellandur ORR"},
+    {"firm_id": "FIRM-C", "name": "Cloud Systems", "lat": 12.9716, "lng": 77.7500, "office_zone": "Whitefield"}
+  ],
+  "bus_stops": [
+    {"stop_id": "STOP-01", "name": "Marathahalli Bridge Hub", "lat": 12.9562, "lng": 77.7019},
+    {"stop_id": "STOP-02", "name": "Silk Board Junction Hub", "lat": 12.9172, "lng": 77.6229},
+    {"stop_id": "STOP-03", "name": "Hoodi Junction Hub", "lat": 12.9917, "lng": 77.7161}
+  ],
+  "employees": [
+    {
+      "emp_id": "EMP-A101",
+      "firm_id": "FIRM-A",
+      "home_address": "Kadugodi, Whitefield",
+      "lat": 12.9982,
+      "lng": 77.7615,
+      "office_zone": "Whitefield",
+      "pickup_time": "08:30",
+      "service_type": "CAB",
+      "consent": "full"
+    },
+    {
+      "emp_id": "EMP-C204",
+      "firm_id": "FIRM-C",
+      "home_address": "Hope Farm Junction",
+      "lat": 12.9840,
+      "lng": 77.7510,
+      "office_zone": "Whitefield",
+      "pickup_time": "08:35",
+      "service_type": "CAB",
+      "consent": "full"
+    },
+    {
+      "emp_id": "EMP-A103",
+      "firm_id": "FIRM-A",
+      "home_address": "Channasandra Main Rd",
+      "lat": 12.9890,
+      "lng": 77.7620,
+      "office_zone": "Whitefield",
+      "pickup_time": "08:30",
+      "service_type": "CAB",
+      "consent": "full"
+    },
+    {
+      "emp_id": "EMP-B301",
+      "firm_id": "FIRM-B",
+      "home_address": "Near Marathahalli Bridge",
+      "lat": 12.9550,
+      "lng": 77.7030,
+      "office_zone": "Bellandur ORR",
+      "pickup_time": "08:15",
+      "service_type": "BUS",
+      "nearest_bus_hub": "STOP-01",
+      "consent": "full"
+    },
+    {
+      "emp_id": "EMP-A104",
+      "firm_id": "FIRM-A",
+      "home_address": "Karthik Nagar",
+      "lat": 12.9600,
+      "lng": 77.6980,
+      "office_zone": "Bellandur ORR",
+      "pickup_time": "08:20",
+      "service_type": "BUS",
+      "nearest_bus_hub": "STOP-01",
+      "consent": "full"
+    }
+  ]
+}
