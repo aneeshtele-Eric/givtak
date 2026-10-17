@@ -5,5 +5,4 @@ __pycache__/
 .env 
 *.pem 
 *key*.json 
-.gcloudignore 
 New Text Document.txt

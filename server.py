@@ -2,12 +2,17 @@ import os
 import time
 import math
 import json
+import logging
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger("givtak")
 
 # -------------------------------------------------------------------------
 # GOOGLE GENAI SDK (Gemini Foundation Models)
@@ -63,7 +68,7 @@ async def add_security_headers(request: Request, call_next):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
@@ -74,11 +79,11 @@ app.add_middleware(
 AGENT_RUNS_LOG: List[Dict[str, Any]] = []
 APPROVAL_AUDIT_LOG: List[Dict[str, Any]] = []
 SERVER_START_TIME = datetime.now(timezone.utc)
+LAST_GEMINI_ERROR: Optional[str] = None
 
 # Configurable Gemini Model Priority Cascade
 DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
-FALLBACK_MODELS = [DEFAULT_MODEL, "gemini-2.5-flash"]
-active_model = "deterministic-fallback"
+FALLBACK_MODELS = list(dict.fromkeys([DEFAULT_MODEL, "gemini-3.6-flash", "gemini-3.5-flash", "gemini-2.5-flash"]))
 
 # -------------------------------------------------------------------------
 # DATA STORE (Zero PII - Clean Anonymized Clusters)
@@ -223,11 +228,13 @@ TOOL_REGISTRY = {
 # GEMINI ORCHESTRATOR WITH DYNAMIC MODEL CASCADE
 # -------------------------------------------------------------------------
 def run_gemini_agent(user_query: str) -> Dict[str, Any]:
+    global LAST_GEMINI_ERROR
     start_ts = time.time()
     api_key = os.getenv("GEMINI_API_KEY")
     executed_tools = []
     response_text = ""
     active_model = "deterministic-fallback"
+    gemini_errors = []
 
     if api_key and HAS_GENAI:
         client = genai.Client(api_key=api_key)
@@ -247,7 +254,6 @@ def run_gemini_agent(user_query: str) -> Dict[str, Any]:
 
         for model_candidate in FALLBACK_MODELS:
             try:
-                active_model = model_candidate
                 resp = client.models.generate_content(
                     model=model_candidate,
                     contents=user_query,
@@ -273,12 +279,22 @@ def run_gemini_agent(user_query: str) -> Dict[str, Any]:
                     response_text = "<br>".join(output_parts)
                 else:
                     response_text = resp.text or "Agent dispatched successfully."
+
+                active_model = model_candidate
+                LAST_GEMINI_ERROR = None
                 break
-            except Exception:
+            except Exception as e:
+                err_msg = f"{model_candidate}: {str(e)}"
+                gemini_errors.append(err_msg)
+                logger.warning(f"Gemini call to {model_candidate} failed: {e}")
                 continue
 
-    # Fallback if API key is unset or network fails
+    # Fallback if API key is unset or all Gemini attempts failed
     if not response_text:
+        active_model = "deterministic-fallback"
+        if gemini_errors:
+            LAST_GEMINI_ERROR = "; ".join(gemini_errors)
+            logger.info(f"Fallback activated due to Gemini failure(s): {LAST_GEMINI_ERROR}")
         q = user_query.lower()
         if "cab" in q or "pool" in q:
             r = calculate_haversine_pooling()
@@ -305,7 +321,8 @@ def run_gemini_agent(user_query: str) -> Dict[str, Any]:
         "model_used": active_model,
         "tools_called": executed_tools,
         "latency_ms": latency_ms,
-        "status": "SUCCESS"
+        "status": "SUCCESS",
+        "error": LAST_GEMINI_ERROR if active_model == "deterministic-fallback" else None
     }
     AGENT_RUNS_LOG.insert(0, run_entry)
     if len(AGENT_RUNS_LOG) > 25:
@@ -320,23 +337,23 @@ class AgentQuery(BaseModel):
     query: str = Field(..., min_length=3, max_length=500)
 
 class EmployeeOptIn(BaseModel):
-    emp_name: str = Field(..., max_length=100)
-    firm_id: str = Field(..., max_length=100)
+    emp_name: str = Field(..., min_length=2, max_length=100)
+    firm_id: str = Field(..., min_length=2, max_length=100)
     home_address: str = Field(..., max_length=200)
-    lat: float
-    lng: float
-    office_zone: str
-    pickup_time: str
-    return_time: str
-    service_type: str
-    day_of_week: str
+    lat: float = Field(..., ge=-90.0, le=90.0)
+    lng: float = Field(..., ge=-180.0, le=180.0)
+    office_zone: str = Field(..., max_length=100)
+    pickup_time: str = Field(..., max_length=10)
+    return_time: str = Field(..., max_length=10)
+    service_type: str = Field(..., pattern="^(CAB|BUS)$")
+    day_of_week: str = Field(..., max_length=20)
     consent: str = "full"
 
 class FleetBatch(BaseModel):
-    company_name: str = Field(..., max_length=100)
-    shift_time: str
-    employee_count: int = Field(..., ge=1, le=10000)
-    fleet_partner: str
+    company_name: str = Field(..., min_length=2, max_length=100)
+    shift_time: str = Field(..., max_length=20)
+    employee_count: int = Field(..., ge=1, le=500, description="Rider count capped between 1 and 500 per batch")
+    fleet_partner: str = Field(..., min_length=2, max_length=100)
 
 class ApprovalRecord(BaseModel):
     action: str = Field(..., max_length=150)
@@ -359,10 +376,11 @@ def health_check():
     return {
         "status": "healthy",
         "service": "givtak",
-        "version": "2.2.1",
+        "version": "2.2.2",
         "active_gemini_model": DEFAULT_MODEL,
         "model_fallbacks": FALLBACK_MODELS,
         "gemini_api_configured": bool(os.getenv("GEMINI_API_KEY")),
+        "last_gemini_error": LAST_GEMINI_ERROR,
         "firestore_status": "CONNECTED" if HAS_FIRESTORE and db else "IN_MEMORY_FALLBACK",
         "region": os.getenv("K_LOCATION", "asia-south1"),
         "uptime_seconds": uptime_sec,
