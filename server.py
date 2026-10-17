@@ -77,7 +77,8 @@ SERVER_START_TIME = datetime.now(timezone.utc)
 
 # Configurable Gemini Model Priority Cascade
 DEFAULT_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
-FALLBACK_MODELS = [DEFAULT_MODEL, "gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"]
+FALLBACK_MODELS = [DEFAULT_MODEL, "gemini-2.5-flash"]
+active_model = "deterministic-fallback"
 
 # -------------------------------------------------------------------------
 # DATA STORE (Zero PII - Clean Anonymized Clusters)
